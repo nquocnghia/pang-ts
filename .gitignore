@@ -1,0 +1,4 @@
+node_modules/
+notes.md
+dist/bundle.js
+.vscode/
