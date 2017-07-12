@@ -1,47 +1,27 @@
 import { Constant } from './constant';
+import { Ship } from './ship/ship';
+import { Point } from './point';
 
 export class Game {
-    private img: HTMLImageElement;
     private bgImg: HTMLImageElement;
 
-    private x: number;
-    private y: number;
-    private width: number;
-    private height: number;
-    private deltaX: number;
-    private deltaY: number;
+    private ship: Ship;
 
     constructor() {
         // load background image
         this.bgImg = new Image();
         this.bgImg.src = 'assets/bg.jpg';
 
-        // load ship's image
-        this.img = new Image();
-        this.img.src = 'assets/player_ship.png';
-
-        // init ship's state
-        this.x = Constant.GAME_LEFT;
-        this.y = Constant.GAME_TOP;
-        this.width = 64;
-        this.height = 48;
-        this.deltaX = 5;
-        this.deltaY = 5;
+        // init ship
+        this.ship = new Ship('assets/player_ship.png',
+            new Point(Constant.GAME_LEFT, Constant.GAME_TOP),
+            64, 48,
+            5, 5
+        );
     }
 
     tick(): void {
-        // adjust ship's position
-        this.x += this.deltaX;
-        this.y += this.deltaY;
-
-        // adjust ship's movement: make it bounce
-        if (this.x <= Constant.GAME_LEFT || this.x + this.width - 1 >= Constant.GAME_RIGHT) {
-            this.deltaX *= -1;
-        }
-
-        if (this.y <= Constant.GAME_TOP || this.y + this.height - 1 >= Constant.GAME_BOTTOM) {
-            this.deltaY *= -1;
-        }
+        this.ship.tick();
     }
 
     draw(ctx: CanvasRenderingContext2D): void {
@@ -54,15 +34,14 @@ export class Game {
             Constant.CANVAS_HEIGHT
         );
 
-        // draw ship image
-        ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
+        this.ship.draw(ctx);
     }
 
     onKeyDown(keyCode: number): void {
-        console.log(keyCode);
+        this.ship.onKeyDown(keyCode);
     }
 
     onKeyUp(keyCode: number): void {
-        console.log(keyCode);
+        this.ship.onKeyUp(keyCode);
     }
 }
