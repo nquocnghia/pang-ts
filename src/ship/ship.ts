@@ -1,5 +1,6 @@
 import { Point } from '../point';
 import { IShip } from './iship';
+import { AssetManager } from '../asset-manager';
 
 /**
  * This represents a Ship
@@ -14,8 +15,7 @@ export abstract class Ship implements IShip {
         public height: number
     ) {
         // load ship's image
-        this.img = new Image();
-        this.img.src = imgSrc;
+        this.img = AssetManager.getInstance().getAsset(imgSrc);
     }
 
     abstract tick(): void;

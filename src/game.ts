@@ -2,9 +2,9 @@ import { Constant } from './constant';
 import { Point } from './point';
 import { Player } from './ship/player';
 import { IShip } from './ship/iship';
-import { BouncingEnemy } from './ship/bouncing-enemy';
 import { Util } from './util';
-import { CircularEnemy } from './ship/circular-enemy';
+import { ShipFactory } from './ship/ship-factory';
+import { AssetManager } from './asset-manager';
 
 export class Game {
     private bgImg: HTMLImageElement;
@@ -14,16 +14,15 @@ export class Game {
 
     constructor() {
         // load background image
-        this.bgImg = new Image();
-        this.bgImg.src = 'assets/bg.jpg';
+        this.bgImg = AssetManager.getInstance().getAsset('bg.jpg');
 
         // init player
-        this.player = new Player();
+        this.player = ShipFactory.makePlayer();
         this.ships.push(this.player);
 
         // init bouncing ships
-        const enemy1 = new BouncingEnemy('assets/enemyBlack1.png', new Point(Constant.GAME_LEFT, Constant.GAME_TOP), 53, 48, 5, 0);
-        const enemy2 = new BouncingEnemy('assets/enemyBlack2.png', new Point(Constant.GAME_LEFT, Constant.GAME_TOP), 64, 52, -5, 0);
+        const enemy1 = ShipFactory.makeEnemy1(new Point(Constant.GAME_LEFT, Constant.GAME_TOP));
+        const enemy2 = ShipFactory.makeEnemy2(new Point(Constant.GAME_LEFT, Constant.GAME_TOP));
         enemy2.top = enemy1.bottom;
         enemy2.right = Constant.GAME_RIGHT;
         this.ships.push(enemy1, enemy2);
@@ -33,15 +32,15 @@ export class Game {
             radius = 100,
             deltaT = 0.05;
         this.ships.push(
-            new CircularEnemy('assets/enemyBlack3.png', 59, 48, origin, 0, 0, 0),
-            new CircularEnemy('assets/enemyBlack3.png', 59, 48, origin, radius, 0, deltaT),
-            new CircularEnemy('assets/enemyBlack3.png', 59, 48, origin, radius, Util.degToRad(45), deltaT),
-            new CircularEnemy('assets/enemyBlack3.png', 59, 48, origin, radius, Util.degToRad(90), deltaT),
-            new CircularEnemy('assets/enemyBlack3.png', 59, 48, origin, radius, Util.degToRad(135), deltaT),
-            new CircularEnemy('assets/enemyBlack3.png', 59, 48, origin, radius, Util.degToRad(180), deltaT),
-            new CircularEnemy('assets/enemyBlack3.png', 59, 48, origin, radius, Util.degToRad(225), deltaT),
-            new CircularEnemy('assets/enemyBlack3.png', 59, 48, origin, radius, Util.degToRad(270), deltaT),
-            new CircularEnemy('assets/enemyBlack3.png', 59, 48, origin, radius, Util.degToRad(315), deltaT),
+            ShipFactory.makeEnemy3(origin, 0, 0, 0),
+            ShipFactory.makeEnemy3(origin, radius, 0, deltaT),
+            ShipFactory.makeEnemy3(origin, radius, Util.degToRad(45), deltaT),
+            ShipFactory.makeEnemy3(origin, radius, Util.degToRad(90), deltaT),
+            ShipFactory.makeEnemy3(origin, radius, Util.degToRad(135), deltaT),
+            ShipFactory.makeEnemy3(origin, radius, Util.degToRad(180), deltaT),
+            ShipFactory.makeEnemy3(origin, radius, Util.degToRad(225), deltaT),
+            ShipFactory.makeEnemy3(origin, radius, Util.degToRad(270), deltaT),
+            ShipFactory.makeEnemy3(origin, radius, Util.degToRad(315), deltaT),
         );
     }
 
@@ -71,7 +70,6 @@ export class Game {
                 this.player.moveRight();
                 break;
         }
-
     }
 
     onKeyUp(keyCode: number): void {

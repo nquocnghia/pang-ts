@@ -9,7 +9,7 @@ export class Player extends LinearShip {
     private VELX = 5;
 
     constructor() {
-        super('assets/player_ship.png',
+        super('player_ship.png',
             new Point(0, 0),
             64, 48,
             0, 0
