@@ -1,63 +1,75 @@
-import { Constant } from '../constant';
 import { Point } from '../point';
+import { IShip } from './iship';
 
 /**
  * This represents a Ship
  */
-export class Ship {
+export abstract class Ship implements IShip {
     private img: HTMLImageElement;
 
     constructor(
         imgSrc: string,
-        private position: Point,
-        private width: number,
-        private height: number,
-        private deltaX: number,
-        private deltaY: number
+        protected position: Point,
+        public width: number,
+        public height: number
     ) {
         // load ship's image
         this.img = new Image();
         this.img.src = imgSrc;
     }
 
-    tick() {
-        // adjust ship's position
-        this.position.x += this.deltaX;
-        this.position.y += this.deltaY;
+    abstract tick(): void;
 
-        // adjust ship's movement: make it bounce
-        if (this.position.x <= Constant.GAME_LEFT || this.position.x + this.width - 1 >= Constant.GAME_RIGHT) {
-            this.deltaX *= -1;
-        }
-
-        if (this.position.y <= Constant.GAME_TOP || this.position.y + this.height - 1 >= Constant.GAME_BOTTOM) {
-            this.deltaY *= -1;
-        }
-    }
-
-    draw(ctx: CanvasRenderingContext2D) {
+    draw(ctx: CanvasRenderingContext2D): void {
         // draw ship image
         ctx.drawImage(this.img, this.position.x, this.position.y, this.width, this.height);
     }
 
-    onKeyDown(keyCode: number) {
-        switch (keyCode) {
-            case 37: // left
-                this.deltaX = -Math.abs(this.deltaX);
-                break;
-            case 39: // right
-                this.deltaX = Math.abs(this.deltaX);
-                break;
-            case 38: // up
-                this.deltaY = -Math.abs(this.deltaY);
-                break;
-            case 40: // down
-                this.deltaY = Math.abs(this.deltaY);
-                break;
-        }
+    get left(): number {
+        return this.position.x;
     }
 
-    onKeyUp(keyCode: number) {
-        console.log(`onKeyUp: ${keyCode}`);
+    get top(): number {
+        return this.position.y;
+    }
+
+    get right(): number {
+        return this.left + this.width - 1;
+    }
+
+    get bottom(): number {
+        return this.top + this.height - 1;
+    }
+
+    get centerX(): number {
+        return this.left + Math.floor(this.width / 2);
+    }
+
+    get centerY(): number {
+        return this.top + Math.floor(this.height / 2);
+    }
+
+    set left(val: number) {
+        this.position.x = val;
+    }
+
+    set top(val: number) {
+        this.position.y = val;
+    }
+
+    set right(val: number) {
+        this.position.x = val - this.width + 1;
+    }
+
+    set bottom(val: number) {
+        this.position.y = val - this.height + 1;
+    }
+
+    set centerX(val: number) {
+        this.position.x = val - Math.floor(this.width / 2);
+    }
+
+    set centerY(val: number) {
+        this.position.y = val - Math.floor(this.height / 2);
     }
 }
