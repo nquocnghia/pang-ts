@@ -22,8 +22,7 @@ export class Player extends LinearShip implements IObserver {
             0, 0
         );
 
-        this.centerX = Constant.GAME_CENTER_X;
-        this.bottom = Constant.GAME_BOTTOM;
+        this.reset();
     }
 
     tick(): void {
@@ -70,5 +69,10 @@ export class Player extends LinearShip implements IObserver {
 
     collisionHandler(that: IShip): void {
         console.log(`${this.constructor.name} collided ${that.constructor.name}`);
+    }
+
+    reset(): void {
+        this.centerX = Constant.GAME_CENTER_X;
+        this.bottom = Constant.GAME_BOTTOM;
     }
 }
