@@ -1,7 +1,7 @@
 import { Ship } from './ship';
 import { Point } from '../point';
 
-export class LinearShip extends Ship {
+export abstract class LinearShip extends Ship {
     constructor(
         imgSrc: string,
         position: Point,

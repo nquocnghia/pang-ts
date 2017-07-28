@@ -1,12 +1,14 @@
 import { Point } from '../point';
 import { IShip } from './iship';
 import { AssetManager } from '../asset-manager';
+import { Observable } from '../event/iobserver';
 
 /**
  * This represents a Ship
  */
-export abstract class Ship implements IShip {
+export abstract class Ship extends Observable implements IShip {
     private img: HTMLImageElement;
+    private contour: Array<number[]>;
 
     constructor(
         imgSrc: string,
@@ -14,8 +16,27 @@ export abstract class Ship implements IShip {
         public width: number,
         public height: number
     ) {
+        super();
+
         // load ship's image
         this.img = AssetManager.getInstance().getAsset(imgSrc);
+
+        // init contour based on image alpha channel
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(this.img, 0, 0, width, height);
+        const pixels = ctx.getImageData(0, 0, width, height);
+
+        this.contour = new Array(height);
+        for (let y = 0; y < height; y++) {
+            this.contour[y] = new Array(width);
+            for (let x = 0; x < width; x++) {
+                const idx = y * width * 4 + x * 4 + 3; // get the alpha channel
+                this.contour[y][x] = pixels.data[idx];
+            }
+        }
     }
 
     abstract tick(): void;
@@ -24,6 +45,41 @@ export abstract class Ship implements IShip {
         // draw ship image
         ctx.drawImage(this.img, this.position.x, this.position.y, this.width, this.height);
     }
+
+    isCollidedWith(that: IShip): boolean {
+        // type check
+        if (this.canCollideWith(that) === false) {
+            return false;
+        }
+
+        // bounding box collision check
+        if (this.left > that.right || this.right < that.left || this.top > that.bottom || this.bottom < that.top) {
+            return false;
+        }
+
+        if (that instanceof Ship) {
+            // pixel perfect test
+            const topMax = this.top > that.top ? this.top : that.top;
+            const bottomMin = this.bottom < that.bottom ? this.bottom : that.bottom;
+            const leftMax = this.left > that.left ? this.left : that.left;
+            const rightMin = this.right < that.right ? this.right : that.right;
+
+            for (let locY = topMax; locY <= bottomMin; locY++) {
+                for (let locX = leftMax; locX <= rightMin; locX++) {
+                    // collision detected
+                    if (this.contour[locY - this.top][locX - this.left] > 0 && that.contour[locY - that.top][locX - that.left] > 0) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    abstract canCollideWith(that: IShip): boolean;
+
+    abstract collisionHandler(that: IShip): void;
 
     get left(): number {
         return this.position.x;

@@ -1,4 +1,6 @@
-export interface IShip {
+import { IObservable } from '../event/iobserver';
+
+export interface IShip extends IObservable {
     left: number;
     top: number;
     right: number;
@@ -11,4 +13,7 @@ export interface IShip {
 
     tick(): void;
     draw(ctx: CanvasRenderingContext2D): void;
+
+    isCollidedWith(that: IShip): boolean;
+    collisionHandler(that: IShip): void;
 }
