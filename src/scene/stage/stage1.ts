@@ -7,9 +7,8 @@ import { Util } from '../../util';
 import { Game } from '../../game';
 import { GameOverScene } from '../game-over-scene';
 import { IShip } from '../../ship/iship';
-import { BouncingEnemy } from '../../ship/bouncing-enemy';
-import { CircularEnemy } from '../../ship/circular-enemy';
 import { StagePhase } from './stage-phase';
+import { Enemy } from '../../ship/enemy';
 
 export class Stage1 extends StageScene {
     constructor(player: Player) {
@@ -47,8 +46,7 @@ export class Stage1 extends StageScene {
         super.removeShip(...ships);
 
         // if all enemies are eleminated
-        if (ships.filter(s => s instanceof BouncingEnemy || s instanceof CircularEnemy).length ===
-            this.ships.filter(s => s instanceof BouncingEnemy || s instanceof CircularEnemy).length) {
+        if (ships.filter(s => s instanceof Enemy).length === this.ships.filter(s => s instanceof Enemy).length) {
             this.phase = StagePhase.ENDED;
         }
     }

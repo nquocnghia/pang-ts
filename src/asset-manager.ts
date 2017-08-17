@@ -11,6 +11,7 @@ export class AssetManager {
         'laserBlue01.png',
         'buttonRed.png',
         'cursor.png',
+        'laserRed01.png',
     ];
     private map: Map<string, HTMLImageElement> = new Map();
 

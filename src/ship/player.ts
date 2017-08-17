@@ -1,4 +1,4 @@
-import { LinearShip } from './linear-ship';
+import { Ship } from './ship';
 import { Constant } from '../constant';
 import { Point } from '../point';
 import { ShipFactory } from './ship-factory';
@@ -6,11 +6,13 @@ import { EventShipCreated, GameEvent, EventShipDestroyed } from '../event/game-e
 import { Bullet } from './bullet';
 import { IObserver } from '../event/iobserver';
 import { IShip } from './iship';
+import { LinearMove } from './move-strategy/linear-move';
+import { Enemy } from './enemy';
 
 /**
  * This represents the player ship
  */
-export class Player extends LinearShip implements IObserver {
+export class Player extends Ship implements IObserver {
     private VELX = 5;
 
     private lastBullet: Bullet = undefined;
@@ -19,7 +21,7 @@ export class Player extends LinearShip implements IObserver {
         super('player_ship.png',
             new Point(0, 0),
             64, 48,
-            0, 0
+            new LinearMove(0, 0)
         );
 
         this.reset();
@@ -38,15 +40,15 @@ export class Player extends LinearShip implements IObserver {
     }
 
     moveLeft(): void {
-        this.deltaX = -this.VELX;
+        this.mover.deltaX = -this.VELX;
     }
 
     moveRight(): void {
-        this.deltaX = this.VELX;
+        this.mover.deltaX = this.VELX;
     }
 
     stop(): void {
-        this.deltaX = 0;
+        this.mover.deltaX = 0;
     }
 
     fire(): void {
@@ -64,15 +66,23 @@ export class Player extends LinearShip implements IObserver {
     }
 
     canCollideWith(that: IShip): boolean {
-        return true;
+        return that instanceof Bullet && that.shooter instanceof Enemy;
     }
 
     collisionHandler(that: IShip): void {
-        console.log(`${this.constructor.name} collided ${that.constructor.name}`);
+        this.notify(new EventShipDestroyed(this));
     }
 
     reset(): void {
         this.centerX = Constant.GAME_CENTER_X;
         this.bottom = Constant.GAME_BOTTOM;
+    }
+
+    get mover(): LinearMove {
+        return super.mover as LinearMove;
+    }
+
+    set mover(val: LinearMove) {
+        super.mover = val;
     }
 }

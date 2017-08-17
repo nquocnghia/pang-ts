@@ -2,6 +2,7 @@ import { Point } from '../point';
 import { IShip } from './iship';
 import { AssetManager } from '../asset-manager';
 import { Observable } from '../event/iobserver';
+import { IMoveStrategy } from './move-strategy/imove-strategy';
 
 /**
  * This represents a Ship
@@ -14,7 +15,8 @@ export abstract class Ship extends Observable implements IShip {
         imgSrc: string,
         protected position: Point,
         public width: number,
-        public height: number
+        public height: number,
+        private _mover: IMoveStrategy
     ) {
         super();
 
@@ -39,7 +41,9 @@ export abstract class Ship extends Observable implements IShip {
         }
     }
 
-    abstract tick(): void;
+    tick(): void {
+        this._mover.move(this);
+    }
 
     draw(ctx: CanvasRenderingContext2D): void {
         // draw ship image
@@ -127,5 +131,13 @@ export abstract class Ship extends Observable implements IShip {
 
     set centerY(val: number) {
         this.position.y = val - Math.floor(this.height / 2);
+    }
+
+    get mover(): IMoveStrategy {
+        return this._mover;
+    }
+
+    set mover(val: IMoveStrategy) {
+        this._mover = val;
     }
 }

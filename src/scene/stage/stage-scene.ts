@@ -127,7 +127,7 @@ export abstract class StageScene implements IScene, IObserver {
     }
 
     onKeyUp(keyCode: number): void {
-        if ((keyCode === 37 && this.player.deltaX < 0) || (keyCode === 39 && this.player.deltaX > 0)) {
+        if ((keyCode === 37 && this.player.mover.deltaX < 0) || (keyCode === 39 && this.player.mover.deltaX > 0)) {
             this.player.stop();
         }
     }
