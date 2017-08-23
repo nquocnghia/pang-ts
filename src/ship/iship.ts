@@ -1,5 +1,6 @@
 import { IObservable } from '../event/iobserver';
 import { IMoveStrategy } from './move-strategy/imove-strategy';
+import { ShipSide } from './ship-side';
 
 export interface IShip extends IObservable {
     left: number;
@@ -13,6 +14,7 @@ export interface IShip extends IObservable {
     height: number;
 
     mover: IMoveStrategy;
+    side: ShipSide;
 
     tick(): void;
     draw(ctx: CanvasRenderingContext2D): void;

@@ -3,18 +3,16 @@ import { Point } from '../point';
 import { EventShipDestroyed } from '../event/game-event';
 import { IShip } from './iship';
 import { LinearMove } from './move-strategy/linear-move';
-import { Enemy } from './enemy';
 import { Constant } from '../constant';
-import { Player } from './player';
 
 export class Bullet extends Ship {
     constructor(
         srcImg: string,
-        public readonly shooter: Ship,
+        shooter: Ship,
         width: number, height: number,
         deltaY: number
     ) {
-        super(srcImg, new Point(0, 0), width, height, new LinearMove(0, deltaY));
+        super(srcImg, new Point(0, 0), width, height, new LinearMove(0, deltaY), shooter.side);
 
         this.centerX = shooter.centerX;
 
@@ -34,14 +32,7 @@ export class Bullet extends Ship {
     }
 
     canCollideWith(that: IShip): boolean {
-        // enemy vs player's bullet
-        return (that instanceof Enemy && this.shooter instanceof Player) ||
-            // player vs enemy's bullet
-            (that instanceof Player && this.shooter instanceof Enemy) ||
-            // bullet vs bullet
-            (that instanceof Bullet &&
-                ((that.shooter instanceof Enemy && this.shooter instanceof Player) ||
-                    (this.shooter instanceof Enemy && that.shooter instanceof Player)));
+        return that.side !== this.side;
     }
 
     collisionHandler(that: IShip): void {

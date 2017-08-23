@@ -3,7 +3,7 @@ import { Point } from '../point';
 import { IMoveStrategy } from './move-strategy/imove-strategy';
 import { IShip } from './iship';
 import { Bullet } from './bullet';
-import { Player } from './player';
+import { ShipSide } from './ship-side';
 import { EventShipDestroyed, EventShipCreated, GameEvent } from '../event/game-event';
 import { ShipFactory } from './ship-factory';
 import { IObserver } from '../event/iobserver';
@@ -22,7 +22,7 @@ export class Enemy extends Ship implements IObserver {
         height: number,
         mover: IMoveStrategy
     ) {
-        super(imgSrc, position, width, height, mover);
+        super(imgSrc, position, width, height, mover, ShipSide.ENEMY);
     }
 
     tick(): void {
@@ -35,7 +35,7 @@ export class Enemy extends Ship implements IObserver {
     }
 
     canCollideWith(that: IShip): boolean {
-        return that instanceof Bullet && that.shooter instanceof Player;
+        return that instanceof Bullet && that.side !== this.side;
     }
 
     collisionHandler(that: IShip): void {

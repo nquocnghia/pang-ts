@@ -7,7 +7,7 @@ import { Bullet } from './bullet';
 import { IObserver } from '../event/iobserver';
 import { IShip } from './iship';
 import { LinearMove } from './move-strategy/linear-move';
-import { Enemy } from './enemy';
+import { ShipSide } from './ship-side';
 
 /**
  * This represents the player ship
@@ -21,7 +21,8 @@ export class Player extends Ship implements IObserver {
         super('player_ship.png',
             new Point(0, 0),
             64, 48,
-            new LinearMove(0, 0)
+            new LinearMove(0, 0),
+            ShipSide.PLAYER
         );
 
         this.reset();
@@ -66,7 +67,7 @@ export class Player extends Ship implements IObserver {
     }
 
     canCollideWith(that: IShip): boolean {
-        return that instanceof Bullet && that.shooter instanceof Enemy;
+        return that instanceof Bullet && that.side !== this.side;
     }
 
     collisionHandler(that: IShip): void {

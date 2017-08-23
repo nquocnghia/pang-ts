@@ -9,6 +9,7 @@ import { PauseScene } from '../pause-scene';
 import { IObserver } from '../../event/iobserver';
 import { GameEvent, EventShipCreated, EventShipDestroyed } from '../../event/game-event';
 import { GameOverScene } from '../game-over-scene';
+import { Collision } from '../../ship/collision';
 
 export abstract class StageScene implements IScene, IObserver {
     private bgImg: HTMLImageElement;
@@ -70,10 +71,7 @@ export abstract class StageScene implements IScene, IObserver {
                 const ship2 = this.ships[j];
 
                 // check if ship1 and ship2 are collided
-                if (ship1.isCollidedWith(ship2)) {
-                    ship1.collisionHandler(ship2);
-                    ship2.collisionHandler(ship1);
-                }
+                Collision.test(ship1, ship2);
             }
         }
     }

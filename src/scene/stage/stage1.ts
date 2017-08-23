@@ -8,24 +8,42 @@ import { Game } from '../../game';
 import { GameOverScene } from '../game-over-scene';
 import { IShip } from '../../ship/iship';
 import { StagePhase } from './stage-phase';
-import { Enemy } from '../../ship/enemy';
+import { ShipSide } from '../../ship/ship-side';
+import { CircularGroup } from '../../ship/group/circular-group';
 
 export class Stage1 extends StageScene {
     constructor(player: Player) {
         super('Stage 1', player, 2);
 
-        // init bouncing ships
-        const enemy1 = ShipFactory.makeEnemy1(new Point(Constant.GAME_LEFT, Constant.GAME_TOP));
-        const enemy2 = ShipFactory.makeEnemy2(new Point(Constant.GAME_LEFT, Constant.GAME_TOP));
-        enemy2.top = enemy1.bottom;
-        enemy2.right = Constant.GAME_RIGHT;
-        this.addShip(enemy1, enemy2);
+        // init bouncing groups
+        const group1 = ShipFactory.makeBouncingGroup(5, 0);
+        let y = Constant.GAME_TOP,
+            x = Constant.GAME_LEFT,
+            enemy;
+        for (let i = 0; i < 5; i++) {
+            enemy = ShipFactory.makeEnemy1(new Point(x, Constant.GAME_TOP));
+            group1.addShip(enemy);
+            x = enemy.right + 10;
+        }
+        y = enemy.bottom + 5;
+
+        const group2 = ShipFactory.makeBouncingGroup(-5, 0);
+        x = Constant.GAME_RIGHT;
+        for (let i = 0; i < 5; i++) {
+            enemy = ShipFactory.makeEnemy2(new Point(0, y));
+            enemy.right = x;
+            group2.addShip(enemy);
+            x = enemy.left - 10;
+        }
+
+        this.addShip(group1, group2);
 
         // init ships that move in a circular path
         const origin = new Point(Constant.GAME_CENTER_X, 250),
             radius = 100,
-            deltaT = 0.05;
-        this.addShip(
+            deltaT = 0.05,
+            group3 = new CircularGroup(origin);
+        group3.addShip(
             ShipFactory.makeEnemy3(origin, 0, 0, 0),
             ShipFactory.makeEnemy3(origin, radius, 0, deltaT),
             ShipFactory.makeEnemy3(origin, radius, Util.degToRad(45), deltaT),
@@ -36,6 +54,8 @@ export class Stage1 extends StageScene {
             ShipFactory.makeEnemy3(origin, radius, Util.degToRad(270), deltaT),
             ShipFactory.makeEnemy3(origin, radius, Util.degToRad(315), deltaT),
         );
+
+        this.addShip(group3);
     }
 
     protected nextScene(game: Game): void {
@@ -46,7 +66,7 @@ export class Stage1 extends StageScene {
         super.removeShip(...ships);
 
         // if all enemies are eleminated
-        if (ships.filter(s => s instanceof Enemy).length === this.ships.filter(s => s instanceof Enemy).length) {
+        if (ships.filter(s => s.side === ShipSide.ENEMY).length === this.ships.filter(s => s.side === ShipSide.ENEMY).length) {
             this.phase = StagePhase.ENDED;
         }
     }

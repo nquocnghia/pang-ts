@@ -3,6 +3,8 @@ import { IShip } from './iship';
 import { AssetManager } from '../asset-manager';
 import { Observable } from '../event/iobserver';
 import { IMoveStrategy } from './move-strategy/imove-strategy';
+import { GroupShip } from './group/group-ship';
+import { ShipSide } from './ship-side';
 
 /**
  * This represents a Ship
@@ -16,7 +18,8 @@ export abstract class Ship extends Observable implements IShip {
         protected position: Point,
         public width: number,
         public height: number,
-        private _mover: IMoveStrategy
+        private _mover: IMoveStrategy,
+        public readonly side: ShipSide
     ) {
         super();
 
@@ -51,6 +54,11 @@ export abstract class Ship extends Observable implements IShip {
     }
 
     isCollidedWith(that: IShip): boolean {
+        // let the group do the test
+        if (that instanceof GroupShip) {
+            return that.isCollidedWith(this);
+        }
+
         // type check
         if (this.canCollideWith(that) === false) {
             return false;
