@@ -8,7 +8,7 @@ import { Constant } from '../constant';
 export class Bullet extends Ship {
     constructor(
         srcImg: string,
-        shooter: Ship,
+        shooter: IShip,
         width: number, height: number,
         deltaY: number
     ) {

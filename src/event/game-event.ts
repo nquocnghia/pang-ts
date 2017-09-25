@@ -24,3 +24,14 @@ export class EventShipDestroyed extends GameEvent {
     get observable(): IShip { return this._observable as IShip; }
     set observable(o: IShip) { this._observable = o; }
 }
+
+export class EventPlayerUpgraded extends GameEvent {
+    constructor(_observable: IShip, private _upgradedPlayer: IShip) {
+        super(_observable);
+    }
+
+    get observable(): IShip { return this._observable as IShip; }
+    set observable(o: IShip) { this._observable = o; }
+
+    get player(): IShip { return this._upgradedPlayer; }
+}

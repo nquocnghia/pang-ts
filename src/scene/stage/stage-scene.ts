@@ -1,15 +1,15 @@
 import { IScene } from '../iscene';
 import { IShip } from '../../ship/iship';
 import { StagePhase } from './stage-phase';
-import { Player } from '../../ship/player';
 import { AssetManager } from '../../asset-manager';
 import { Constant } from '../../constant';
 import { Game } from '../../game';
 import { PauseScene } from '../pause-scene';
 import { IObserver } from '../../event/iobserver';
-import { GameEvent, EventShipCreated, EventShipDestroyed } from '../../event/game-event';
+import { GameEvent, EventShipCreated, EventShipDestroyed, EventPlayerUpgraded } from '../../event/game-event';
 import { GameOverScene } from '../game-over-scene';
 import { Collision } from '../../ship/collision';
+import { PlayerWrapper } from '../../ship/player-wrapper';
 
 export abstract class StageScene implements IScene, IObserver {
     private bgImg: HTMLImageElement;
@@ -22,7 +22,9 @@ export abstract class StageScene implements IScene, IObserver {
     private counter = 0;
     private INTRO_DURATION_FRM: number; // in frame (computed value)
 
-    constructor(private stageName: string, protected player: Player, introDuration: number) {
+    protected playerWrapper: PlayerWrapper;
+
+    constructor(private stageName: string, player: IShip, introDuration: number) {
         // load background image
         this.bgImg = AssetManager.getInstance().getAsset('bg.jpg');
 
@@ -30,7 +32,8 @@ export abstract class StageScene implements IScene, IObserver {
         this.INTRO_DURATION_FRM = introDuration * Constant.FPS;
 
         // init player
-        this.addShip(this.player);
+        this.playerWrapper = new PlayerWrapper(this, player);
+        this.addShip(player);
     }
 
     tick(game: Game): void {
@@ -113,20 +116,20 @@ export abstract class StageScene implements IScene, IObserver {
                 }
                 break;
             case 37: // left
-                this.player.moveLeft();
+                this.playerWrapper.moveLeft();
                 break;
             case 39: // right
-                this.player.moveRight();
+                this.playerWrapper.moveRight();
                 break;
             case 32: // space
-                this.player.fire();
+                this.playerWrapper.fire();
                 break;
         }
     }
 
     onKeyUp(keyCode: number): void {
-        if ((keyCode === 37 && this.player.mover.deltaX < 0) || (keyCode === 39 && this.player.mover.deltaX > 0)) {
-            this.player.stop();
+        if ((keyCode === 37 && this.playerWrapper.mover.deltaX < 0) || (keyCode === 39 && this.playerWrapper.mover.deltaX > 0)) {
+            this.playerWrapper.stop();
         }
     }
 
@@ -151,9 +154,13 @@ export abstract class StageScene implements IScene, IObserver {
             this.removeShip(event.observable);
 
             // game over
-            if (event.observable === this.player) {
+            if (event.observable === this.playerWrapper.player) {
                 this.phase = StagePhase.GAME_OVER;
             }
+        } else if (event instanceof EventPlayerUpgraded) {
+            this.removeShip(this.playerWrapper.player);
+            this.addShip(event.player);
+            this.playerWrapper.player = event.player;
         }
     }
 }

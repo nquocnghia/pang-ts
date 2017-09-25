@@ -1,5 +1,4 @@
 import { StageScene } from './stage-scene';
-import { Player } from '../../ship/player';
 import { ShipFactory } from '../../ship/ship-factory';
 import { Point } from '../../point';
 import { Constant } from '../../constant';
@@ -10,9 +9,11 @@ import { IShip } from '../../ship/iship';
 import { StagePhase } from './stage-phase';
 import { ShipSide } from '../../ship/ship-side';
 import { CircularGroup } from '../../ship/group/circular-group';
+import { Shield } from '../../ship/item/shield';
+import { EnemyCarryingItem } from '../../ship/decorator/enemy-carrying-item';
 
 export class Stage1 extends StageScene {
-    constructor(player: Player) {
+    constructor(player: IShip) {
         super('Stage 1', player, 2);
 
         // init bouncing groups
@@ -44,7 +45,7 @@ export class Stage1 extends StageScene {
             deltaT = 0.05,
             group3 = new CircularGroup(origin);
         group3.addShip(
-            ShipFactory.makeEnemy3(origin, 0, 0, 0),
+            new EnemyCarryingItem(ShipFactory.makeEnemy3(origin, 0, 0, 0), new Shield()), // carries the shield item
             ShipFactory.makeEnemy3(origin, radius, 0, deltaT),
             ShipFactory.makeEnemy3(origin, radius, Util.degToRad(45), deltaT),
             ShipFactory.makeEnemy3(origin, radius, Util.degToRad(90), deltaT),

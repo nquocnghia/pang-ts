@@ -1,22 +1,17 @@
 import { Ship } from './ship';
 import { Constant } from '../constant';
 import { Point } from '../point';
-import { ShipFactory } from './ship-factory';
-import { EventShipCreated, GameEvent, EventShipDestroyed } from '../event/game-event';
+import { EventShipDestroyed } from '../event/game-event';
 import { Bullet } from './bullet';
-import { IObserver } from '../event/iobserver';
 import { IShip } from './iship';
 import { LinearMove } from './move-strategy/linear-move';
 import { ShipSide } from './ship-side';
+import { Item } from './item/item';
 
 /**
  * This represents the player ship
  */
-export class Player extends Ship implements IObserver {
-    private VELX = 5;
-
-    private lastBullet: Bullet = undefined;
-
+export class Player extends Ship {
     constructor() {
         super('player_ship.png',
             new Point(0, 0),
@@ -24,8 +19,6 @@ export class Player extends Ship implements IObserver {
             new LinearMove(0, 0),
             ShipSide.PLAYER
         );
-
-        this.reset();
     }
 
     tick(): void {
@@ -40,43 +33,14 @@ export class Player extends Ship implements IObserver {
         }
     }
 
-    moveLeft(): void {
-        this.mover.deltaX = -this.VELX;
-    }
-
-    moveRight(): void {
-        this.mover.deltaX = this.VELX;
-    }
-
-    stop(): void {
-        this.mover.deltaX = 0;
-    }
-
-    fire(): void {
-        if (this.lastBullet === undefined) {
-            this.lastBullet = ShipFactory.makePlayerBullet(this);
-            this.lastBullet.attach(this);
-            this.notify(new EventShipCreated(this, this.lastBullet));
-        }
-    }
-
-    update(event: GameEvent): void {
-        if (event instanceof EventShipDestroyed && event.observable === this.lastBullet) {
-            this.lastBullet = undefined;
-        }
-    }
-
     canCollideWith(that: IShip): boolean {
-        return that instanceof Bullet && that.side !== this.side;
+        return (that instanceof Bullet && that.side !== this.side) || that instanceof Item;
     }
 
     collisionHandler(that: IShip): void {
-        this.notify(new EventShipDestroyed(this));
-    }
-
-    reset(): void {
-        this.centerX = Constant.GAME_CENTER_X;
-        this.bottom = Constant.GAME_BOTTOM;
+        if (that instanceof Bullet) {
+            this.notify(new EventShipDestroyed(this));
+        }
     }
 
     get mover(): LinearMove {

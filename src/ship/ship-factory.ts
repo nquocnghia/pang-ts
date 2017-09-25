@@ -6,6 +6,7 @@ import { BouncingMove } from './move-strategy/bouncing-move';
 import { CircularMove } from './move-strategy/circular-move';
 import { NopeMove } from './move-strategy/nope-move';
 import { BouncingGroup } from './group/bouncing-group';
+import { IShip } from './iship';
 
 export class ShipFactory {
     static makePlayer(): Player {
@@ -24,7 +25,7 @@ export class ShipFactory {
         return new Enemy('enemyBlack3.png', new Point(0, 0), 59, 48, new CircularMove(origin, radius, angle, deltaT));
     }
 
-    static makePlayerBullet(player: Player): Bullet {
+    static makePlayerBullet(player: IShip): Bullet {
         return new Bullet('laserBlue01.png', player, 5, 32, -10);
     }
 
