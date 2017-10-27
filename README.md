@@ -10,4 +10,5 @@ $ npm run serve # dev server: open http://localhost:8080 in your browser
 ```
 
 #### Todos:
-- Save game
+- Save game feature
+- More stages
