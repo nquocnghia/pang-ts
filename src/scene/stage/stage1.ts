@@ -4,13 +4,13 @@ import { Point } from '../../point';
 import { Constant } from '../../constant';
 import { Util } from '../../util';
 import { Game } from '../../game';
-import { GameOverScene } from '../game-over-scene';
 import { IShip } from '../../ship/iship';
 import { StagePhase } from './stage-phase';
 import { ShipSide } from '../../ship/ship-side';
 import { CircularGroup } from '../../ship/group/circular-group';
 import { Shield } from '../../ship/item/shield';
 import { EnemyCarryingItem } from '../../ship/decorator/enemy-carrying-item';
+import { Stage2 } from './stage2';
 
 export class Stage1 extends StageScene {
     constructor(player: IShip) {
@@ -60,7 +60,7 @@ export class Stage1 extends StageScene {
     }
 
     protected nextScene(game: Game): void {
-        game.scene = new GameOverScene(true);
+        game.scene = new Stage2(this.playerWrapper.player);
     }
 
     removeShip(...ships: IShip[]) {

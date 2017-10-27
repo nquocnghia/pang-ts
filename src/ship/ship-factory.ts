@@ -7,6 +7,7 @@ import { CircularMove } from './move-strategy/circular-move';
 import { NopeMove } from './move-strategy/nope-move';
 import { BouncingGroup } from './group/bouncing-group';
 import { IShip } from './iship';
+import { Boss } from './boss';
 
 export class ShipFactory {
     static makePlayer(): Player {
@@ -35,5 +36,25 @@ export class ShipFactory {
 
     static makeBouncingGroup(deltaX: number, deltaY: number): BouncingGroup {
         return new BouncingGroup(new BouncingMove(deltaX, deltaY));
+    }
+
+    static makeBoss(): Boss {
+        return new Boss();
+    }
+
+    static makeBossBullets(boss: Boss): Bullet[] {
+        const leftBullet = new Bullet('laserRed08.png', boss, 48, 46, Math.floor(Math.random() * 4) + 3);
+        leftBullet.centerX = boss.left;
+        leftBullet.top = boss.top + Math.floor(boss.height / 2);
+
+        const rightBullet = new Bullet('laserRed08.png', boss, 48, 46, Math.floor(Math.random() * 4) + 3);
+        rightBullet.centerX = boss.right;
+        rightBullet.top = boss.top + Math.floor(boss.height / 2);
+
+        return [
+            leftBullet,
+            new Bullet('laserRed08.png', boss, 48, 46, Math.floor(Math.random() * 4) + 3),
+            rightBullet
+        ];
     }
 }
